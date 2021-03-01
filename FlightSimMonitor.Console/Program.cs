@@ -80,7 +80,7 @@ namespace Handfield.FlightSimMonitor.Console
                     {
                         _fsMon.Connect("FlightSimMonitor Console", _host, _port);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         System.Console.WriteLine($"Failed to connect to host {_host} on port {_port}!");
                         _isConnecting = false;
