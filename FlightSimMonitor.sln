@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSDataLogger", "FSDataLogger.csproj", "{D023F21F-1AFF-4527-9C1E-838BEA0EA18F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightSimMonitor", "FlightSimMonitor\FlightSimMonitor.csproj", "{D023F21F-1AFF-4527-9C1E-838BEA0EA18F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlightSimMonitor.Console", "FlightSimMonitor.Console\FlightSimMonitor.Console.csproj", "{610EF61A-F3BF-4E30-B506-C74016EEEBCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D023F21F-1AFF-4527-9C1E-838BEA0EA18F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D023F21F-1AFF-4527-9C1E-838BEA0EA18F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D023F21F-1AFF-4527-9C1E-838BEA0EA18F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{610EF61A-F3BF-4E30-B506-C74016EEEBCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{610EF61A-F3BF-4E30-B506-C74016EEEBCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{610EF61A-F3BF-4E30-B506-C74016EEEBCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{610EF61A-F3BF-4E30-B506-C74016EEEBCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
