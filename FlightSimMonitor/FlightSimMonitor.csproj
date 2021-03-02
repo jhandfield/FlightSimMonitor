@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="FlightSimMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimCommunicator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
