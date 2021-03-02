@@ -27,8 +27,10 @@ namespace Handfield.FlightSimMonitor.Console
             _run = true;
             _isConnecting = false;
             _fsMon = new FlightSimMonitor();
+            _fsMon.PollInterval = 1000;
             _fsMon.Connected += _fsMon_Connected;
             _fsMon.Disconnected += _fsMon_Disconnected;
+            _fsMon.DataReceived += _fsMon_DataReceived;
 
             // Drop into the menu loop
             DoMenu();
@@ -39,6 +41,13 @@ namespace Handfield.FlightSimMonitor.Console
             // End
             System.Console.Write("Press any key to exit...");
             System.Console.ReadKey();
+        }
+
+        private static void _fsMon_DataReceived(object sender, FlightSimMonitor.DataReceivedEventArgs e)
+        {
+            string groundState = (e.OnGround) ? "Landed" : "Flying";
+
+            System.Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")}: Loc: {e.Latitude.ToString("0.000")},{e.Longitude.ToString("0.000")}\tAlt: {e.Altitude.ToString("0")}\tHdg: {e.Heading.ToString("0")}\t\tIAS: {e.IndicatedAirspeed.ToString("0")}\tGS: {e.GPSGroundSpeed.ToString("0")}\t\tState: {groundState}");
         }
 
         private static void DoMenu()
@@ -137,6 +146,9 @@ namespace Handfield.FlightSimMonitor.Console
             _isConnecting = false;
             UpdateStatus();
             System.Console.WriteLine($"SimConnect connected at {e.ConnectedTime.ToString()}! Last disconnected at {e.LastDisconnectedTime.ToString()}");
+
+            // Begin polling
+            _fsMon.Poll();
         }
 
         private static void UpdateStatus()

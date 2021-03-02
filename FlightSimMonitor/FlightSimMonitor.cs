@@ -1,22 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using CTrue.FsConnect;
+using Microsoft.FlightSimulator.SimConnect;
 
 namespace Handfield.FlightSimMonitor
 {
-    public class FlightSimMonitor
+    public partial class FlightSimMonitor
     {
         #region Fields
         private FsConnect _fsConn;
-        private DateTime _lastConnectedTime;
-        private DateTime _lastDisconnecedTime;
+        internal DateTime _lastConnectedTime;
+        protected DateTime _lastDisconnecedTime;
         private uint _port;
+        private List<SimProperty> _dataDefinition;
+        private Timer _pollTimer;
+        private int _pollInterval;
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Frequency to request data updates from SimConnect, in milliseconds. Set to 0 to disable automatic polling of data.
+        /// </summary>
+        public int PollInterval
+        {
+            get
+            {
+                return _pollInterval;
+            }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("Value must be zero or greater");
+                else
+                    _pollInterval = value;
+            }
+        }
+        
         /// <summary>
         /// Hostname of SimConnect server to connect to
         /// </summary>
@@ -54,11 +76,84 @@ namespace Handfield.FlightSimMonitor
         #region Constructors
         public FlightSimMonitor()
         {
+            // Initialize a new FsConnect object
             _fsConn = new FsConnect();
             _fsConn.ConnectionChanged += _fsConn_ConnectionChanged;
+            _fsConn.FsDataReceived += _fsConn_FsDataReceived;
 
+            // Initialize the last connected & disconnected times to the minimum DateTime value, since DateTimes are wonky about nulls
             _lastConnectedTime = DateTime.MinValue;
             _lastDisconnecedTime = DateTime.MinValue;
+
+            // Initialize the data definition
+            _dataDefinition = InitializeDataDefinition();
+
+            
+
+            
+        }
+
+        /// <summary>
+        /// Begin polling SimConnect for data
+        /// </summary>
+        public void Poll()
+        {
+            Poll(PollInterval);
+        }
+
+        /// <summary>
+        /// Begin polling SimConnect for data
+        /// </summary>
+        /// <param name="pollInterval">Interval (in milliseconds) to poll for new data</param>
+        public void Poll(int pollInterval)
+        {
+            // Ensure we're currently connected
+            if (IsConnected)
+                // Start the timer
+                _pollTimer = new Timer((e) => { _fsConn.RequestData(Requests.PlaneInfo); }, null, 0, pollInterval);
+        }
+
+        public void Stop()
+        {
+            // Destroy the timer
+            _pollTimer = null;
+        }
+
+        /// <summary>
+        /// Returns a hard-coded list of properties to query SimConnect about
+        /// </summary>
+        private List<SimProperty> InitializeDataDefinition()
+        {
+            return new List<SimProperty>
+            {
+                new SimProperty("Title", null, SIMCONNECT_DATATYPE.STRING256),
+                new SimProperty(FsSimVar.PlaneLatitude, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.PlaneLongitude, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.PlaneAltitude, FsUnit.Feet, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.PlaneHeadingDegreesTrue, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32)
+            };
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+        private struct PlaneInfoResponse
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public String Title;
+            public double Latitude;
+            public double Longitude;
+            public double Altitude;
+            public double Heading;
+            public double IndicatedAirspeed;
+            public double GPSGroundSpeed;
+            public bool OnGround;
+        }
+
+        public enum Requests
+        {
+            PlaneInfo = 0
         }
         #endregion
 
@@ -68,6 +163,7 @@ namespace Handfield.FlightSimMonitor
         /// </summary>
         public void Connect()
         {
+            // Connect to SimConnect at the address configured
             _fsConn.Connect(ApplicationName, Hostname, Port, SimConnectProtocol.Ipv4);
         }
 
@@ -86,97 +182,6 @@ namespace Handfield.FlightSimMonitor
 
             // Call Connect()
             Connect();
-        }
-
-        /// <summary>
-        /// Handle ConnectionChanged events from FsConnect
-        /// </summary>
-        private void _fsConn_ConnectionChanged(object sender, EventArgs e)
-        {
-            // Fire the appropriate event, based on the new connection state
-            if (_fsConn.Connected)
-            {
-                _lastConnectedTime = DateTime.Now;
-                OnConnected(new ConnectedEventArgs { ConnectedTime = _lastConnectedTime, LastDisconnectedTime = _lastDisconnecedTime });
-            }
-            else
-            {
-                _lastDisconnecedTime = DateTime.Now;
-                OnDisconnected(new DisconnectedEventArgs { DisconnectedTime = _lastDisconnecedTime, LastConnectedTime = _lastConnectedTime });
-            }
-
-        }
-        #endregion
-
-        #region Event Definitions
-        /// <summary>
-        /// Fires when SimConnect reports it has connected to the server
-        /// </summary>
-        public event EventHandler<ConnectedEventArgs> Connected;
-
-        /// <summary>
-        /// Fires when SimConnect reports it has been disconnected from the server
-        /// </summary>
-        public event EventHandler<DisconnectedEventArgs> Disconnected;
-        #endregion
-
-        #region Event Handlers
-        protected virtual void OnConnected(ConnectedEventArgs e)
-        {
-            EventHandler<ConnectedEventArgs> raiseEvent = Connected;
-
-            if (raiseEvent != null)
-            {
-                // Set properties
-                e.ConnectedTime = _lastConnectedTime;
-                e.LastDisconnectedTime = _lastDisconnecedTime;
-
-                // Raise the event
-                raiseEvent(this, e);
-            }
-        }
-
-        protected virtual void OnDisconnected(DisconnectedEventArgs e)
-        {
-            EventHandler<DisconnectedEventArgs> raiseEvent = Disconnected;
-
-            if (raiseEvent != null)
-            {
-                // Set properties
-                e.DisconnectedTime = _lastDisconnecedTime;
-                e.LastConnectedTime = _lastConnectedTime;
-
-                // Raise the event
-                raiseEvent(this, e);
-            }
-        }
-        #endregion
-
-        #region Event Arguments
-        public class ConnectedEventArgs
-        {
-            public DateTime ConnectedTime { get; set; }
-            public DateTime LastDisconnectedTime { get; set; }
-
-            public ConnectedEventArgs() { }
-            public ConnectedEventArgs(DateTime connTime, DateTime disconTime)
-            {
-                ConnectedTime = connTime;
-                LastDisconnectedTime = disconTime;
-            }
-        }
-
-        public class DisconnectedEventArgs
-        {
-            public DateTime DisconnectedTime { get; set; }
-            public DateTime LastConnectedTime { get; set; }
-
-            public DisconnectedEventArgs() { }
-            public DisconnectedEventArgs(DateTime disconnTime, DateTime connTime)
-            {
-                DisconnectedTime = disconnTime;
-                LastConnectedTime = connTime;
-            }
         }
         #endregion
     }
