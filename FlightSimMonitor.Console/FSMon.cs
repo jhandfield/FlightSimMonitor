@@ -31,7 +31,9 @@ namespace Handfield.FlightSimMonitor.Console
             _fsMon.Connected += _fsMon_Connected;
             _fsMon.Disconnected += _fsMon_Disconnected;
             _fsMon.DataReceived += _fsMon_DataReceived;
-
+            _fsMon.Landed += _fsMon_Landed;
+            _fsMon.ParkingBrakeSet += _fsMon_ParkingBrakeSet;
+            _fsMon.ParkingBrakeReleased += _fsMon_ParkingBrakeReleased;
             // Drop into the menu loop
             DoMenu();
 
@@ -43,11 +45,27 @@ namespace Handfield.FlightSimMonitor.Console
             System.Console.ReadKey();
         }
 
+        private static void _fsMon_ParkingBrakeReleased(object sender, EventArgs e)
+        {
+            System.Console.WriteLine("Parking brake released!");
+        }
+
+        private static void _fsMon_ParkingBrakeSet(object sender, EventArgs e)
+        {
+            System.Console.WriteLine("Parking brake set!");
+        }
+
+        private static void _fsMon_Landed(object sender, EventArgs e)
+        {
+            System.Console.WriteLine("The Eagle has landed!");
+        }
+
         private static void _fsMon_DataReceived(object sender, FlightSimMonitor.DataReceivedEventArgs e)
         {
             string groundState = (e.OnGround) ? "Landed" : "Flying";
+            string brakeState = (e.ParkingBrakeSet > 0) ? "Set" : "Released";
 
-            System.Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")}: Loc: {e.Latitude.ToString("0.000")},{e.Longitude.ToString("0.000")}\tAlt: {e.Altitude.ToString("0")}\tHdg: {e.Heading.ToString("0")}\t\tIAS: {e.IndicatedAirspeed.ToString("0")}\tGS: {e.GPSGroundSpeed.ToString("0")}\t\tState: {groundState}");
+            System.Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")}: {e.Latitude.ToString("0.000")},{e.Longitude.ToString("0.000")}\tAlt: {e.Altitude.ToString("0")}\tHdg: {e.Heading.ToString("0")}\t\tIAS: {e.IndicatedAirspeed.ToString("0")}\tGS: {e.GPSGroundSpeed.ToString("0")}\t\tState: {groundState}\tBrake: {brakeState}");
         }
 
         private static void DoMenu()

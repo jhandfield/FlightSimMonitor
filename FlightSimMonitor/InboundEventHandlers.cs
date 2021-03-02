@@ -51,11 +51,45 @@ namespace Handfield.FlightSimMonitor
                     Heading = r.Heading,
                     IndicatedAirspeed = r.IndicatedAirspeed,
                     GPSGroundSpeed = r.GPSGroundSpeed,
-                    OnGround = r.OnGround
+                    OnGround = r.OnGround,
+                    ParkingBrakeSet = r.ParkingBrakeSet
                 };
 
                 // Fire the DataReceived event
                 OnDataReceived(args);
+
+                // If this is the first data we've received, set some monitoring flags
+                if (!_firstDataRecvd)
+                {
+                    _lastGroundState = r.OnGround;
+                    _lastParkingBrakeState = r.ParkingBrakeSet;
+
+                    // Record that we have received first data
+                    _firstDataRecvd = true;
+                }
+                else
+                {
+                    // Check if the ground state has changed
+                    if (r.OnGround != _lastGroundState)
+                        // Detect what happened
+                        if (r.OnGround == true)
+                            // We landed, fire the Landed event
+                            OnLanded();
+                        else
+                            OnTakeoff();
+
+                    if (r.ParkingBrakeSet != _lastParkingBrakeState)
+                        // Detect what happened
+                        if (r.ParkingBrakeSet == short.MaxValue)
+                            // Parking brake was juset set
+                            OnParkingBrakeSet();
+                        else
+                            OnParkingBrakeReleased();
+                }
+
+                // Update record flags
+                _lastGroundState = r.OnGround;
+                _lastParkingBrakeState = r.ParkingBrakeSet;
             }
         }
     }

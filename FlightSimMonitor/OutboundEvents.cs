@@ -19,9 +19,65 @@ namespace Handfield.FlightSimMonitor
         /// Fires when SimConnect reports it has been disconnected from the server
         /// </summary>
         public event EventHandler<DisconnectedEventArgs> Disconnected;
+
+        /// <summary>
+        /// Fires when the plane has landed
+        /// </summary>
+        public event EventHandler Landed;
+
+        /// <summary>
+        /// Fires when the plane has taken off
+        /// </summary>
+        public event EventHandler Takeoff;
+
+        /// <summary>
+        /// Fires when the parking brake has been set
+        /// </summary>
+        public event EventHandler ParkingBrakeSet;
+
+        /// <summary>
+        /// Fires when the parking brake is released
+        /// </summary>
+        public event EventHandler ParkingBrakeReleased;
+
         #endregion
 
         #region Event Handlers
+        internal virtual void OnParkingBrakeSet()
+        {
+            EventHandler raiseEvent = ParkingBrakeSet;
+
+            if (raiseEvent != null)
+                // Raise the event
+                raiseEvent(this, EventArgs.Empty);
+        }
+
+        internal virtual void OnParkingBrakeReleased()
+        {
+            EventHandler raiseEvent = ParkingBrakeReleased;
+
+            if (raiseEvent != null)
+                // Raise the event
+                raiseEvent(this, EventArgs.Empty);
+        }
+
+        internal virtual void OnLanded()
+        {
+            EventHandler raiseEvent = Landed;
+
+            if (raiseEvent != null)
+                // Raise the event
+                raiseEvent(this, EventArgs.Empty);
+        }
+
+        internal virtual void OnTakeoff()
+        {
+            EventHandler raiseEvent = Takeoff;
+
+            if (raiseEvent != null)
+                raiseEvent(this, EventArgs.Empty);
+        }
+
         internal virtual void OnDataReceived(DataReceivedEventArgs e)
         {
             EventHandler<DataReceivedEventArgs> raiseEvent = DataReceived;
@@ -75,6 +131,7 @@ namespace Handfield.FlightSimMonitor
             public double IndicatedAirspeed { get; set; }
             public double GPSGroundSpeed { get; set; }
             public bool OnGround { get; set; }
+            public double ParkingBrakeSet { get; set; }
         }
 
         public class ConnectedEventArgs

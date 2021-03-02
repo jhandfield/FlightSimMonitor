@@ -18,6 +18,9 @@ namespace Handfield.FlightSimMonitor
         private List<SimProperty> _dataDefinition;
         private Timer _pollTimer;
         private int _pollInterval;
+        private bool _lastGroundState;
+        private short _lastParkingBrakeState;
+        private bool _firstDataRecvd;
         #endregion
 
         #region Properties
@@ -88,9 +91,7 @@ namespace Handfield.FlightSimMonitor
             // Initialize the data definition
             _dataDefinition = InitializeDataDefinition();
 
-            
-
-            
+            _firstDataRecvd = false;
         }
 
         /// <summary>
@@ -133,7 +134,8 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty(FsSimVar.PlaneHeadingDegreesTrue, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32)
+                new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32)
             };
         }
 
@@ -149,6 +151,7 @@ namespace Handfield.FlightSimMonitor
             public double IndicatedAirspeed;
             public double GPSGroundSpeed;
             public bool OnGround;
+            public short ParkingBrakeSet;
         }
 
         public enum Requests
