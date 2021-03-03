@@ -10,8 +10,8 @@ This project is actively in development - as of 3/1/2021, the library is capable
 Updated 3/2/2020
 * ~~Implement simple data retrieval and monitoring from SimConnect via events~~ 3/1/2021
 * Implement additional options for logging / shipping flight data
-** Disk (CSV, TSV, JSON, etc.)
-** Network (Websocket)
+* * Disk (CSV, TSV, JSON, etc.)
+* * Network (Websocket)
 * Add additional data fields
 * Add additional flight events
 * Implement field setting capability
