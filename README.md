@@ -7,8 +7,11 @@ A .NET Framework library to simplify monitoring of flight telemetry and events i
 This project is actively in development - as of 3/1/2021, the library is capable of connecting to SimConnect and firing events on connect and disconnect, but little else.
 
 ## Roadmap
-Updated 3/1/2020
-* Implement simple data retrieval and monitoring from SimConnect via events
-* Implement remote shipping of data and events
-* ???
-* PROFIT
+Updated 3/2/2020
+* ~~Implement simple data retrieval and monitoring from SimConnect via events~~ 3/1/2021
+* Implement additional options for logging / shipping flight data
+** Disk (CSV, TSV, JSON, etc.)
+** Network (Websocket)
+* Add additional data fields
+* Add additional flight events
+* Implement field setting capability
