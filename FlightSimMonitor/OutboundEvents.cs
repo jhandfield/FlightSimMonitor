@@ -127,11 +127,22 @@ namespace Handfield.FlightSimMonitor
             public double Latitude { get; set; }
             public double Longitude { get; set; }
             public double Altitude { get; set; }
-            public double Heading { get; set; }
+            public double TrueHeading { get; set; }
+            /// <summary>
+            /// Contains the plane's reported magnetic heading, not true heading
+            /// </summary>
+            public string Heading { get; set; }
+            public int VerticalSpeedPerSecond { get; set; }
+            public int VerticalSpeedPerMinute { get { return VerticalSpeedPerSecond / 60; } }
+            public int VerticalSpeed { get { return VerticalSpeedPerMinute; } }
             public double IndicatedAirspeed { get; set; }
             public double GPSGroundSpeed { get; set; }
             public bool OnGround { get; set; }
             public double ParkingBrakeSet { get; set; }
+
+            public string FlightState { get; set; }
+            public string ParkingBrakeState { get; set; }
+            public DateTime Timestamp { get; set; }
         }
 
         public class ConnectedEventArgs

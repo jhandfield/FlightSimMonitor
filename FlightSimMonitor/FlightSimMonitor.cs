@@ -8,7 +8,7 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace Handfield.FlightSimMonitor
 {
-    public partial class FlightSimMonitor
+    public partial class FlightSimMonitor : IDisposable
     {
         #region Fields
         private FsConnect _fsConn;
@@ -91,6 +91,7 @@ namespace Handfield.FlightSimMonitor
             // Initialize the data definition
             _dataDefinition = InitializeDataDefinition();
 
+            // Note that we have yet to receive any data
             _firstDataRecvd = false;
         }
 
@@ -135,7 +136,9 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32)
+                new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.HeadingIndicator, FsUnit.Radians, SIMCONNECT_DATATYPE.STRING8),
+                new SimProperty(FsSimVar.VerticalSpeed, FsUnit.FeetPerSecond, SIMCONNECT_DATATYPE.INT32)
             };
         }
 
@@ -147,11 +150,13 @@ namespace Handfield.FlightSimMonitor
             public double Latitude;
             public double Longitude;
             public double Altitude;
-            public double Heading;
+            public double TrueHeading;
             public double IndicatedAirspeed;
             public double GPSGroundSpeed;
             public bool OnGround;
             public short ParkingBrakeSet;
+            public string Heading;
+            public int VerticalSpeedPerSecond;
         }
 
         public enum Requests
@@ -187,5 +192,23 @@ namespace Handfield.FlightSimMonitor
             Connect();
         }
         #endregion
+
+        /// <summary>
+        /// Disconnects from SimConnect
+        /// </summary>
+        public void Disconnect()
+        {
+            // Disconnect & dispose
+            _fsConn.Disconnect();
+        }
+
+        public void Dispose()
+        {
+            // Disconnect from SimConnect
+            _fsConn.Disconnect();
+
+            // Dispose of _fsConn
+            _fsConn.Dispose();
+        }
     }
 }

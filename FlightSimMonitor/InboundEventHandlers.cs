@@ -48,11 +48,16 @@ namespace Handfield.FlightSimMonitor
                     Latitude = r.Latitude,
                     Longitude = r.Longitude,
                     Altitude = r.Altitude,
+                    TrueHeading = r.TrueHeading,
                     Heading = r.Heading,
+                    VerticalSpeedPerSecond = r.VerticalSpeedPerSecond,
                     IndicatedAirspeed = r.IndicatedAirspeed,
                     GPSGroundSpeed = r.GPSGroundSpeed,
                     OnGround = r.OnGround,
-                    ParkingBrakeSet = r.ParkingBrakeSet
+                    ParkingBrakeSet = r.ParkingBrakeSet,
+                    FlightState = (r.OnGround) ? "Landed" : "Flying",
+                    ParkingBrakeState = (r.ParkingBrakeSet > 0) ? "Set" : "Released",
+                    Timestamp = DateTime.UtcNow
                 };
 
                 // Fire the DataReceived event
