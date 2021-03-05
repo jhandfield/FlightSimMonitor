@@ -91,6 +91,7 @@ namespace Handfield.FlightSimMonitor
             // Initialize the data definition
             _dataDefinition = InitializeDataDefinition();
 
+            // Note that we have yet to receive any data
             _firstDataRecvd = false;
         }
 
@@ -132,7 +133,9 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty(FsSimVar.PlaneLongitude, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.PlaneAltitude, FsUnit.Feet, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.PlaneHeadingDegreesTrue, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.PlaneHeadingDegreesMagnetic, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.AirspeedTrue, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
                 new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32)
@@ -147,8 +150,10 @@ namespace Handfield.FlightSimMonitor
             public double Latitude;
             public double Longitude;
             public double Altitude;
-            public double Heading;
-            public double IndicatedAirspeed;
+            public double HeadingTrue;
+            public double HeadingMagnetic;
+            public double Airspeed_Indicated;
+            public double Airspeed_True;
             public double GPSGroundSpeed;
             public bool OnGround;
             public short ParkingBrakeSet;
@@ -185,6 +190,24 @@ namespace Handfield.FlightSimMonitor
 
             // Call Connect()
             Connect();
+        }
+
+        /// <summary>
+        /// Disconnects from SimConnect
+        /// </summary>
+        public void Disconnect()
+        {
+            // Disconnect & dispose
+            _fsConn.Disconnect();
+        }
+
+        public void Dispose()
+        {
+            // Disconnect from SimConnect
+            _fsConn.Disconnect();
+
+            // Dispose of _fsConn
+            _fsConn.Dispose();
         }
         #endregion
     }

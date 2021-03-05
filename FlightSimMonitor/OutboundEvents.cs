@@ -127,11 +127,16 @@ namespace Handfield.FlightSimMonitor
             public double Latitude { get; set; }
             public double Longitude { get; set; }
             public double Altitude { get; set; }
-            public double Heading { get; set; }
-            public double IndicatedAirspeed { get; set; }
+            public double HeadingTrue { get; set; }
+            public double HeadingMagnetic { get; set; }
+            public double Airspeed_Indicated { get; set; }
+            public double Airspeed_True { get; set; }
             public double GPSGroundSpeed { get; set; }
             public bool OnGround { get; set; }
             public double ParkingBrakeSet { get; set; }
+            public string FlightState { get; set; }
+            public string ParkingBrakeState { get; set; }
+            public DateTime Timestamp { get; set; }
         }
 
         public class ConnectedEventArgs
