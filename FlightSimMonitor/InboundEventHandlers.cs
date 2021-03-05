@@ -56,8 +56,13 @@ namespace Handfield.FlightSimMonitor
                     Airspeed_Indicated = r.Airspeed_Indicated,
                     Airspeed_True = r.Airspeed_True,
                     GPSGroundSpeed = r.GPSGroundSpeed,
+                    VerticalSpeed = r.VerticalSpeed,
                     OnGround = r.OnGround,
                     ParkingBrakeSet = r.ParkingBrakeSet,
+                    Engine1Combusting = r.Engine1Combusting,
+                    Engine2Combusting = r.Engine2Combusting,
+                    Engine3Combusting = r.Engine3Combusting,
+                    Engine4Combusting = r.Engine4Combusting,
                     FlightState = (r.OnGround) ? "Landed" : "Flying",
                     ParkingBrakeState = (r.ParkingBrakeSet > 0) ? "Set" : "Released",
                     Timestamp = DateTime.UtcNow

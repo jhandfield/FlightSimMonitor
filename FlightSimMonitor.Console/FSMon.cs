@@ -243,17 +243,21 @@ namespace Handfield.FlightSimMonitor.Console
             // Column 1
             UpdateFieldValue(12, 1, 15, $"{args.Latitude.ToString("0.000")},{args.Longitude.ToString("0.000")}");   // Position
             UpdateFieldValue(12, 2, 7, $"{args.Altitude.ToString("0")}ft");                                         // Altitude
-            UpdateFieldValue(12, 3, 4, $"{args.HeadingMagnetic.ToString("F1")}°");                                  // Heading
+            UpdateFieldValue(12, 3, 4, $"{args.HeadingMagnetic.ToString("0")}°");                                  // Heading
             UpdateFieldValue(12, 4, 6, $"{args.Airspeed_Indicated.ToString("0")}kts");                              // Indicated Speed
             UpdateFieldValue(12, 5, 6, $"{args.Airspeed_True.ToString("0")}kts");                                   // True Airspeed
             UpdateFieldValue(12, 6, 6, $"{args.GPSGroundSpeed.ToString("0")}kts");                                  // Groundspeed
-            UpdateFieldValue(12, 7, 8, "--");                          // Vertical Speed
+            UpdateFieldValue(12, 7, 8, $"{(args.VerticalSpeed * 60).ToString("0")}fpm");                            // Vertical Speed
 
             // Column 2
-            UpdateFieldValue(41, 1, 14, "--");
-            UpdateFieldValue(41, 2, 14, "--");
-            UpdateFieldValue(41, 3, 14, "--");
-            UpdateFieldValue(41, 4, 14, "--");
+            string engine1State = (args.Engine1Combusting) ? "Running" : "Off";
+            string engine2State = (args.Engine2Combusting) ? "Running" : "Off";
+            string engine3State = (args.Engine3Combusting) ? "Running" : "Off";
+            string engine4State = (args.Engine4Combusting) ? "Running" : "Off";
+            UpdateFieldValue(41, 1, 14, engine1State);
+            UpdateFieldValue(41, 2, 14, engine2State);
+            UpdateFieldValue(41, 3, 14, engine3State);
+            UpdateFieldValue(41, 4, 14, engine4State);
 
             // Column 3
             UpdateFieldValue(72, 1, 8, $"{args.FlightState}");

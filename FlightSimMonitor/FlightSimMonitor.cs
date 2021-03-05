@@ -137,8 +137,13 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.AirspeedTrue, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.VerticalSpeed, FsUnit.FeetPerSecond, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32)
+                new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG COMBUSTION:1", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG COMBUSTION:2", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG COMBUSTION:3", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG COMBUSTION:4", "Bool", SIMCONNECT_DATATYPE.INT32),
             };
         }
 
@@ -155,8 +160,13 @@ namespace Handfield.FlightSimMonitor
             public double Airspeed_Indicated;
             public double Airspeed_True;
             public double GPSGroundSpeed;
+            public double VerticalSpeed;
             public bool OnGround;
             public short ParkingBrakeSet;
+            public bool Engine1Combusting;
+            public bool Engine2Combusting;
+            public bool Engine3Combusting;
+            public bool Engine4Combusting;
         }
 
         public enum Requests
