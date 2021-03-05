@@ -134,11 +134,16 @@ namespace Handfield.FlightSimMonitor
             public double GPSGroundSpeed { get; set; }
             public double VerticalSpeed { get; set; }
             public bool OnGround { get; set; }
+            public double NumberOfEngines { get; set; }
+            public bool Engine1Starter { get; set; }
+            public bool Engine2Starter { get; set; }
+            public bool Engine3Starter { get; set; }
+            public bool Engine4Starter { get; set; }
             public bool Engine1Combusting { get; set; }
             public bool Engine2Combusting { get; set; }
             public bool Engine3Combusting { get; set; }
             public bool Engine4Combusting { get; set; }
-            public double ParkingBrakeSet { get; set; }
+            public int ParkingBrakeSet { get; set; }
             public string FlightState { get; set; }
             public string ParkingBrakeState { get; set; }
             public DateTime Timestamp { get; set; }

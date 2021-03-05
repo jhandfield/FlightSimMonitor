@@ -250,10 +250,10 @@ namespace Handfield.FlightSimMonitor.Console
             UpdateFieldValue(12, 7, 8, $"{(args.VerticalSpeed * 60).ToString("0")}fpm");                            // Vertical Speed
 
             // Column 2
-            string engine1State = (args.Engine1Combusting) ? "Running" : "Off";
-            string engine2State = (args.Engine2Combusting) ? "Running" : "Off";
-            string engine3State = (args.Engine3Combusting) ? "Running" : "Off";
-            string engine4State = (args.Engine4Combusting) ? "Running" : "Off";
+            string engine1State = (args.Engine1Combusting) ? "Running" : args.Engine1Starter ? "Armed" : "Off";
+            string engine2State = args.NumberOfEngines < 2 ? "N/A" : args.Engine2Combusting ? "Running" : args.Engine2Starter ? "Armed" : "Off";
+            string engine3State = args.NumberOfEngines < 3 ? "N/A" : args.Engine3Combusting ? "Running" : args.Engine3Starter ? "Armed" : "Off";
+            string engine4State = args.NumberOfEngines < 4 ? "N/A" : args.Engine4Combusting ? "Running" : args.Engine4Starter ? "Armed" : "Off";
             UpdateFieldValue(41, 1, 14, engine1State);
             UpdateFieldValue(41, 2, 14, engine2State);
             UpdateFieldValue(41, 3, 14, engine3State);

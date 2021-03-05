@@ -19,7 +19,7 @@ namespace Handfield.FlightSimMonitor
         private Timer _pollTimer;
         private int _pollInterval;
         private bool _lastGroundState;
-        private short _lastParkingBrakeState;
+        private int _lastParkingBrakeState;
         private bool _firstDataRecvd;
         #endregion
 
@@ -140,6 +140,11 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty(FsSimVar.VerticalSpeed, FsUnit.FeetPerSecond, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
                 new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.NumberOfEngines, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty("GENERAL ENG STARTER:1", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG STARTER:2", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG STARTER:3", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty("GENERAL ENG STARTER:4", "Bool", SIMCONNECT_DATATYPE.INT32),
                 new SimProperty("GENERAL ENG COMBUSTION:1", "Bool", SIMCONNECT_DATATYPE.INT32),
                 new SimProperty("GENERAL ENG COMBUSTION:2", "Bool", SIMCONNECT_DATATYPE.INT32),
                 new SimProperty("GENERAL ENG COMBUSTION:3", "Bool", SIMCONNECT_DATATYPE.INT32),
@@ -162,7 +167,12 @@ namespace Handfield.FlightSimMonitor
             public double GPSGroundSpeed;
             public double VerticalSpeed;
             public bool OnGround;
-            public short ParkingBrakeSet;
+            public int ParkingBrakeSet;
+            public double NumberOfEngines;
+            public bool Engine1Starter;
+            public bool Engine2Starter;
+            public bool Engine3Starter;
+            public bool Engine4Starter;
             public bool Engine1Combusting;
             public bool Engine2Combusting;
             public bool Engine3Combusting;
