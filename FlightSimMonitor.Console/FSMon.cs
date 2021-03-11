@@ -210,19 +210,32 @@ namespace Handfield.FlightSimMonitor.Console
         {
             WriteFieldLabel(1, 1, "Position", 9);
             WriteFieldLabel(1, 2, "Altitude", 9);
-            WriteFieldLabel(1, 3, "Heading", 9);
-            WriteFieldLabel(1, 4, "IndicSpd", 9);
-            WriteFieldLabel(1, 5, "TAS", 9);
-            WriteFieldLabel(1, 6, "GrndSpd", 9);
-            WriteFieldLabel(1, 7, "VertSpd", 9);
+            WriteFieldLabel(1, 3, "Pitch", 9);
+            WriteFieldLabel(1, 4, "Bank", 9);
+            WriteFieldLabel(1, 5, "Heading", 9);
+            WriteFieldLabel(1, 6, "Flaps", 9);
+            WriteFieldLabel(1, 7, "IndicSpd", 9);
+            WriteFieldLabel(1, 8, "TAS", 9);
+            WriteFieldLabel(1, 9, "GrndSpd", 9);
+            WriteFieldLabel(1, 10, "VertSpd", 9);
 
-            WriteFieldLabel(30, 1, "Engine 1", 9);
-            WriteFieldLabel(30, 2, "Engine 2", 9);
-            WriteFieldLabel(30, 3, "Engine 3", 9);
-            WriteFieldLabel(30, 4, "Engine 4", 9);
+            WriteFieldLabel(40, 1, "Engine 1", 16);
+            WriteFieldLabel(40, 2, "Engine 2", 16);
+            WriteFieldLabel(40, 3, "Engine 3", 16);
+            WriteFieldLabel(40, 4, "Engine 4", 16);
+            WriteFieldLabel(40, 5, "Nav Lights", 16);
+            WriteFieldLabel(40, 6, "Beacon", 16);
+            WriteFieldLabel(40, 7, "Landing Lights", 16);
+            WriteFieldLabel(40, 8, "Taxi Lights", 16);
+            WriteFieldLabel(40, 9, "Strobe", 16);
+            WriteFieldLabel(40, 10, "Panel Lights", 16);
+            WriteFieldLabel(40, 11, "Recog Lights", 16);
+            WriteFieldLabel(40, 12, "Wing Lights", 16);
+            WriteFieldLabel(40, 13, "Logo Lights", 16);
+            WriteFieldLabel(40, 14, "Cabin Lights", 16);
 
-            WriteFieldLabel(56, 1, "State", 14);
-            WriteFieldLabel(56, 2, "Parking Brake", 14);
+            WriteFieldLabel(80, 1, "State", 14);
+            WriteFieldLabel(80, 2, "Parking Brake", 14);
         }
 
         private static void WriteFieldLabel(int left, int top, string value, int length)
@@ -243,28 +256,49 @@ namespace Handfield.FlightSimMonitor.Console
             // Column 1
             UpdateFieldValue(12, 1, 15, $"{args.Latitude.ToString("0.000")},{args.Longitude.ToString("0.000")}");   // Position
             UpdateFieldValue(12, 2, 7, $"{args.Altitude.ToString("0")}ft");                                         // Altitude
-            UpdateFieldValue(12, 3, 4, $"{args.HeadingMagnetic.ToString("0")}°");                                  // Heading
-            UpdateFieldValue(12, 4, 6, $"{args.Airspeed_Indicated.ToString("0")}kts");                              // Indicated Speed
-            UpdateFieldValue(12, 5, 6, $"{args.Airspeed_True.ToString("0")}kts");                                   // True Airspeed
-            UpdateFieldValue(12, 6, 6, $"{args.GPSGroundSpeed.ToString("0")}kts");                                  // Groundspeed
-            UpdateFieldValue(12, 7, 8, $"{(args.VerticalSpeed * 60).ToString("0")}fpm");                            // Vertical Speed
+            UpdateFieldValue(12, 3, 6, $"{args.Pitch.ToString("0.00")}°");
+            UpdateFieldValue(12, 4, 6, $"{args.Bank.ToString("0.00")}°");
+            UpdateFieldValue(12, 5, 4, $"{args.HeadingMagnetic.ToString("0")}°");                                   // Heading
+            UpdateFieldValue(12, 6, 7, $"{args.FlapsHandleIndex.ToString("0")} notch of {args.FlapsNumHandlePositions.ToString("0")}");
+            UpdateFieldValue(12, 7, 6, $"{args.Airspeed_Indicated.ToString("0")}kts");                              // Indicated Speed
+            UpdateFieldValue(12, 8, 6, $"{args.Airspeed_True.ToString("0")}kts");                                   // True Airspeed
+            UpdateFieldValue(12, 9, 6, $"{args.GPSGroundSpeed.ToString("0")}kts");                                  // Groundspeed
+            UpdateFieldValue(12, 10, 8, $"{(args.VerticalSpeed * 60).ToString("0")}fpm");                            // Vertical Speed
 
             // Column 2
             string engine1State = (args.Engine1Combusting) ? "Running" : args.Engine1Starter ? "Armed" : "Off";
             string engine2State = args.NumberOfEngines < 2 ? "N/A" : args.Engine2Combusting ? "Running" : args.Engine2Starter ? "Armed" : "Off";
             string engine3State = args.NumberOfEngines < 3 ? "N/A" : args.Engine3Combusting ? "Running" : args.Engine3Starter ? "Armed" : "Off";
             string engine4State = args.NumberOfEngines < 4 ? "N/A" : args.Engine4Combusting ? "Running" : args.Engine4Starter ? "Armed" : "Off";
-            UpdateFieldValue(41, 1, 14, engine1State);
-            UpdateFieldValue(41, 2, 14, engine2State);
-            UpdateFieldValue(41, 3, 14, engine3State);
-            UpdateFieldValue(41, 4, 14, engine4State);
+            UpdateFieldValue(58, 1, 16, engine1State);
+            UpdateFieldValue(58, 2, 16, engine2State);
+            UpdateFieldValue(58, 3, 16, engine3State);
+            UpdateFieldValue(58, 4, 16, engine4State);
+            UpdateFieldValue(58, 5, 16, $"{OnOffState(args.Lights.Nav)}");
+            UpdateFieldValue(58, 6, 16, $"{OnOffState(args.Lights.Beacon)}");
+            UpdateFieldValue(58, 7, 16, $"{OnOffState(args.Lights.Landing)}");
+            UpdateFieldValue(58, 8, 16, $"{OnOffState(args.Lights.Taxi)}");
+            UpdateFieldValue(58, 9, 16, $"{OnOffState(args.Lights.Strobe)}");
+            UpdateFieldValue(58, 10, 16, $"{OnOffState(args.Lights.Panel)}");
+            UpdateFieldValue(58, 11, 16, $"{OnOffState(args.Lights.Recognition)}");
+            UpdateFieldValue(58, 12, 16, $"{OnOffState(args.Lights.Wing)}");
+            UpdateFieldValue(58, 13, 16, $"{OnOffState(args.Lights.Logo)}");
+            UpdateFieldValue(58, 14, 16, $"{OnOffState(args.Lights.Cabin)}");
 
             // Column 3
-            UpdateFieldValue(72, 1, 8, $"{args.FlightState}");
-            UpdateFieldValue(72, 2, 8, $"{args.ParkingBrakeState}");
+            UpdateFieldValue(97, 1, 8, $"{args.FlightState}");
+            UpdateFieldValue(97, 2, 8, $"{args.ParkingBrakeState}");
 
             // Update Last Updated
             UpdateFieldValue(_lastUpdatePosition, 30, 19, $"{args.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")}");
+        }
+
+        private static string OnOffState(bool val)
+        {
+            if (val)
+                return "On";
+            else
+                return "Off";
         }
 
         /// <summary>

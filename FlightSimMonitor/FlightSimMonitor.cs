@@ -132,8 +132,12 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty(FsSimVar.PlaneLatitude, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.PlaneLongitude, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.PlaneAltitude, FsUnit.Feet, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.PlanePitchDegrees, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.PlaneBankDegrees, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.PlaneHeadingDegreesTrue, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.PlaneHeadingDegreesMagnetic, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.FlapsHandleIndex, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimProperty(FsSimVar.FlapsNumHandlePositions, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.AirspeedTrue, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
                 new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
@@ -149,6 +153,16 @@ namespace Handfield.FlightSimMonitor
                 new SimProperty("GENERAL ENG COMBUSTION:2", "Bool", SIMCONNECT_DATATYPE.INT32),
                 new SimProperty("GENERAL ENG COMBUSTION:3", "Bool", SIMCONNECT_DATATYPE.INT32),
                 new SimProperty("GENERAL ENG COMBUSTION:4", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightNav, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightBeacon, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightLanding, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightTaxi, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightStrobe, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightPanel, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightRecognition, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightWing, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightLogo, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimProperty(FsSimVar.LightCabin, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32)
             };
         }
 
@@ -160,8 +174,12 @@ namespace Handfield.FlightSimMonitor
             public double Latitude;
             public double Longitude;
             public double Altitude;
+            public double Pitch;
+            public double Bank;
             public double HeadingTrue;
             public double HeadingMagnetic;
+            public double FlapsHandleIndex;
+            public double FlapsNumHandlePositions;
             public double Airspeed_Indicated;
             public double Airspeed_True;
             public double GPSGroundSpeed;
@@ -177,6 +195,16 @@ namespace Handfield.FlightSimMonitor
             public bool Engine2Combusting;
             public bool Engine3Combusting;
             public bool Engine4Combusting;
+            public bool LightNav;
+            public bool LightBeacon;
+            public bool LightLanding;
+            public bool LightTaxi;
+            public bool LightStrobe;
+            public bool LightPanel;
+            public bool LightRecognition;
+            public bool LightWing;
+            public bool LightLogo;
+            public bool LightCabin;
         }
 
         public enum Requests

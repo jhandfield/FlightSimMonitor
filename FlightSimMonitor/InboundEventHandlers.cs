@@ -44,15 +44,18 @@ namespace Handfield.FlightSimMonitor
             {
                 // Prepare the data to send out in the DataReceived event
                 PlaneInfoResponse r = (PlaneInfoResponse)e.Data;
-
-                DataReceivedEventArgs args = new DataReceivedEventArgs
+                DataReceivedEventArgs args = new DataReceivedEventArgs()
                 {
                     Title = r.Title,
                     Latitude = r.Latitude,
                     Longitude = r.Longitude,
                     Altitude = r.Altitude,
+                    Pitch = r.Pitch,
+                    Bank = r.Bank,
                     HeadingTrue = r.HeadingTrue,
                     HeadingMagnetic = r.HeadingMagnetic,
+                    FlapsHandleIndex = r.FlapsHandleIndex,
+                    FlapsNumHandlePositions = r.FlapsNumHandlePositions,
                     Airspeed_Indicated = r.Airspeed_Indicated,
                     Airspeed_True = r.Airspeed_True,
                     GPSGroundSpeed = r.GPSGroundSpeed,
@@ -68,6 +71,19 @@ namespace Handfield.FlightSimMonitor
                     Engine2Combusting = r.Engine2Combusting,
                     Engine3Combusting = r.Engine3Combusting,
                     Engine4Combusting = r.Engine4Combusting,
+                    Lights = new LightStates()
+                    {
+                        Nav = r.LightNav,
+                        Beacon = r.LightBeacon,
+                        Landing = r.LightLanding,
+                        Taxi = r.LightTaxi,
+                        Strobe = r.LightStrobe,
+                        Panel = r.LightPanel,
+                        Recognition = r.LightRecognition,
+                        Wing = r.LightWing,
+                        Logo = r.LightLogo,
+                        Cabin = r.LightCabin,
+                    },
                     FlightState = (r.OnGround) ? "Landed" : "Flying",
                     ParkingBrakeState = (r.ParkingBrakeSet > 0) ? "Set" : "Released",
                     Timestamp = DateTime.UtcNow

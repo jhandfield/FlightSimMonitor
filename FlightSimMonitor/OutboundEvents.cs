@@ -120,6 +120,20 @@ namespace Handfield.FlightSimMonitor
         }
         #endregion
 
+        public class LightStates
+        {
+            public bool Nav { get; set; }
+            public bool Beacon { get; set; }
+            public bool Landing { get; set; }
+            public bool Taxi { get; set; }
+            public bool Strobe { get; set; }
+            public bool Panel { get; set; }
+            public bool Recognition { get; set; }
+            public bool Wing { get; set; }
+            public bool Logo { get; set; }
+            public bool Cabin { get; set; }
+        }
+
         #region Event Arguments
         public class DataReceivedEventArgs
         {
@@ -127,8 +141,12 @@ namespace Handfield.FlightSimMonitor
             public double Latitude { get; set; }
             public double Longitude { get; set; }
             public double Altitude { get; set; }
+            public double Pitch { get; set; }
+            public double Bank { get; set; }
             public double HeadingTrue { get; set; }
             public double HeadingMagnetic { get; set; }
+            public double FlapsHandleIndex { get; set; }
+            public double FlapsNumHandlePositions { get; set; }
             public double Airspeed_Indicated { get; set; }
             public double Airspeed_True { get; set; }
             public double GPSGroundSpeed { get; set; }
@@ -143,6 +161,7 @@ namespace Handfield.FlightSimMonitor
             public bool Engine2Combusting { get; set; }
             public bool Engine3Combusting { get; set; }
             public bool Engine4Combusting { get; set; }
+            public LightStates Lights { get; set; }
             public int ParkingBrakeSet { get; set; }
             public string FlightState { get; set; }
             public string ParkingBrakeState { get; set; }
