@@ -1,5 +1,6 @@
 ﻿using CTrue.FsConnect;
 using System;
+using System.Linq;
 
 namespace Handfield.FlightSimMonitor
 {
@@ -8,10 +9,10 @@ namespace Handfield.FlightSimMonitor
         /// <summary>
         /// Handle ConnectionChanged events from FsConnect
         /// </summary>
-        private void _fsConn_ConnectionChanged(object sender, EventArgs e)
+        private void _fsConn_ConnectionChanged(object sender, bool connected)
         {
             // Fire the appropriate event, based on the new connection state
-            if (_fsConn.Connected)
+            if (connected)
             {
                 // Record the time we've connected
                 _lastConnectedTime = DateTime.Now;
@@ -43,7 +44,7 @@ namespace Handfield.FlightSimMonitor
             if (e.RequestId == (uint)Requests.PlaneInfo)
             {
                 // Prepare the data to send out in the DataReceived event
-                PlaneInfoResponse r = (PlaneInfoResponse)e.Data;
+                PlaneInfoResponse r = (PlaneInfoResponse)e.Data.FirstOrDefault();
                 DataReceivedEventArgs args = new DataReceivedEventArgs()
                 {
                     Title = r.Title,

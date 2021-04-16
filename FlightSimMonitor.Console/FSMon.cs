@@ -256,8 +256,8 @@ namespace Handfield.FlightSimMonitor.Console
             // Column 1
             UpdateFieldValue(12, 1, 15, $"{args.Latitude.ToString("0.000")},{args.Longitude.ToString("0.000")}");   // Position
             UpdateFieldValue(12, 2, 7, $"{args.Altitude.ToString("0")}ft");                                         // Altitude
-            UpdateFieldValue(12, 3, 6, $"{args.Pitch.ToString("0.00")}°");
-            UpdateFieldValue(12, 4, 6, $"{args.Bank.ToString("0.00")}°");
+            UpdateFieldValue(12, 3, 7, $"{args.Pitch.ToString("0.00")}°");
+            UpdateFieldValue(12, 4, 7, $"{args.Bank.ToString("0.00")}°");
             UpdateFieldValue(12, 5, 4, $"{args.HeadingMagnetic.ToString("0")}°");                                   // Heading
             UpdateFieldValue(12, 6, 7, $"{args.FlapsHandleIndex.ToString("0")} notch of {args.FlapsNumHandlePositions.ToString("0")}");
             UpdateFieldValue(12, 7, 6, $"{args.Airspeed_Indicated.ToString("0")}kts");                              // Indicated Speed

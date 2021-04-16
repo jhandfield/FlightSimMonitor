@@ -15,12 +15,13 @@ namespace Handfield.FlightSimMonitor
         internal DateTime _lastConnectedTime;
         protected DateTime _lastDisconnecedTime;
         private uint _port;
-        private List<SimProperty> _dataDefinition;
+        private List<SimVar> _dataDefinition;
         private Timer _pollTimer;
         private int _pollInterval;
         private bool _lastGroundState;
         private int _lastParkingBrakeState;
         private bool _firstDataRecvd;
+        private int _dataDefinitionId;
         #endregion
 
         #region Properties
@@ -79,6 +80,9 @@ namespace Handfield.FlightSimMonitor
         #region Constructors
         public FlightSimMonitor()
         {
+            // Initialize the data definition
+            _dataDefinition = InitializeDataDefinition();
+
             // Initialize a new FsConnect object
             _fsConn = new FsConnect();
             _fsConn.ConnectionChanged += _fsConn_ConnectionChanged;
@@ -87,9 +91,6 @@ namespace Handfield.FlightSimMonitor
             // Initialize the last connected & disconnected times to the minimum DateTime value, since DateTimes are wonky about nulls
             _lastConnectedTime = DateTime.MinValue;
             _lastDisconnecedTime = DateTime.MinValue;
-
-            // Initialize the data definition
-            _dataDefinition = InitializeDataDefinition();
 
             // Note that we have yet to receive any data
             _firstDataRecvd = false;
@@ -112,7 +113,7 @@ namespace Handfield.FlightSimMonitor
             // Ensure we're currently connected
             if (IsConnected)
                 // Start the timer
-                _pollTimer = new Timer((e) => { _fsConn.RequestData(Requests.PlaneInfo); }, null, 0, pollInterval);
+                _pollTimer = new Timer((e) => { _fsConn.RequestData(Requests.PlaneInfo, _dataDefinitionId); }, null, 0, pollInterval);
         }
 
         public void Stop()
@@ -124,86 +125,120 @@ namespace Handfield.FlightSimMonitor
         /// <summary>
         /// Returns a hard-coded list of properties to query SimConnect about
         /// </summary>
-        private List<SimProperty> InitializeDataDefinition()
+        private List<SimVar> InitializeDataDefinition()
         {
-            return new List<SimProperty>
+            return new List<SimVar>
             {
-                new SimProperty("Title", null, SIMCONNECT_DATATYPE.STRING256),
-                new SimProperty(FsSimVar.PlaneLatitude, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.PlaneLongitude, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.PlaneAltitude, FsUnit.Feet, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.PlanePitchDegrees, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.PlaneBankDegrees, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.PlaneHeadingDegreesTrue, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.PlaneHeadingDegreesMagnetic, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.FlapsHandleIndex, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.FlapsNumHandlePositions, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.AirspeedTrue, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.VerticalSpeed, FsUnit.FeetPerSecond, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.NumberOfEngines, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
-                new SimProperty("GENERAL ENG STARTER:1", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG STARTER:2", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG STARTER:3", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG STARTER:4", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG COMBUSTION:1", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG COMBUSTION:2", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG COMBUSTION:3", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty("GENERAL ENG COMBUSTION:4", "Bool", SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightNav, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightBeacon, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightLanding, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightTaxi, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightStrobe, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightPanel, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightRecognition, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightWing, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightLogo, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
-                new SimProperty(FsSimVar.LightCabin, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32)
+                new SimVar("Title", null, SIMCONNECT_DATATYPE.STRING256),
+                new SimVar(FsSimVar.PlaneLatitude, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.PlaneLongitude, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.PlaneAltitude, FsUnit.Feet, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.PlanePitchDegrees, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.PlaneBankDegrees, FsUnit.Degree, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.PlaneHeadingDegreesTrue, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.PlaneHeadingDegreesMagnetic, FsUnit.Degrees, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.FlapsHandleIndex, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.FlapsNumHandlePositions, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.AirspeedIndicated, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.AirspeedTrue, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.GpsGroundSpeed, FsUnit.Knots, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.VerticalSpeed, FsUnit.FeetPerSecond, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar(FsSimVar.SimOnGround, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.BrakeParkingPosition, FsUnit.Position32k, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.NumberOfEngines, FsUnit.Number, SIMCONNECT_DATATYPE.FLOAT64),
+                new SimVar("GENERAL ENG STARTER:1", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG STARTER:2", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG STARTER:3", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG STARTER:4", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG COMBUSTION:1", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG COMBUSTION:2", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG COMBUSTION:3", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar("GENERAL ENG COMBUSTION:4", "Bool", SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightNav, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightBeacon, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightLanding, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightTaxi, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightStrobe, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightPanel, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightRecognition, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightWing, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightLogo, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32),
+                new SimVar(FsSimVar.LightCabin, FsUnit.Bool, SIMCONNECT_DATATYPE.INT32)
             };
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-        private struct PlaneInfoResponse
+        public struct PlaneInfoResponse
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public String Title;
+            [SimVar(NameId = FsSimVar.PlaneLatitude, UnitId = FsUnit.Degree)]
             public double Latitude;
+            [SimVar(NameId = FsSimVar.PlaneLongitude, UnitId = FsUnit.Degree)]
             public double Longitude;
+            [SimVar(NameId = FsSimVar.PlaneAltitude, UnitId = FsUnit.Feet)]
             public double Altitude;
+            [SimVar(NameId = FsSimVar.PlanePitchDegrees, UnitId = FsUnit.Degree)]
             public double Pitch;
+            [SimVar(NameId = FsSimVar.PlaneBankDegrees, UnitId = FsUnit.Degree)]
             public double Bank;
+            [SimVar(NameId = FsSimVar.PlaneHeadingDegreesTrue, UnitId = FsUnit.Degree)]
             public double HeadingTrue;
+            [SimVar(NameId = FsSimVar.PlaneHeadingDegreesMagnetic, UnitId = FsUnit.Degree)]
             public double HeadingMagnetic;
+            [SimVar(NameId = FsSimVar.FlapsHandleIndex, UnitId = FsUnit.Number)]
             public double FlapsHandleIndex;
+            [SimVar(NameId = FsSimVar.FlapsNumHandlePositions, UnitId = FsUnit.Number)]
             public double FlapsNumHandlePositions;
+            [SimVar(NameId = FsSimVar.AirspeedIndicated, UnitId = FsUnit.Knots)]
             public double Airspeed_Indicated;
+            [SimVar(NameId = FsSimVar.AirspeedTrue, UnitId = FsUnit.Knots)]
             public double Airspeed_True;
+            [SimVar(NameId = FsSimVar.GpsGroundSpeed, UnitId = FsUnit.Knots)]
             public double GPSGroundSpeed;
+            [SimVar(NameId = FsSimVar.VerticalSpeed, UnitId = FsUnit.FeetPerSecond)]
             public double VerticalSpeed;
+            [SimVar(NameId = FsSimVar.SimOnGround, UnitId = FsUnit.Bool)]
             public bool OnGround;
+            [SimVar(NameId = FsSimVar.BrakeParkingPosition, UnitId = FsUnit.Position32k)]
             public int ParkingBrakeSet;
+            [SimVar(NameId = FsSimVar.NumberOfEngines, UnitId = FsUnit.Number)]
             public double NumberOfEngines;
+            [SimVar(Name = "GENERAL ENG STARTER:1", UnitId = FsUnit.Bool)]
             public bool Engine1Starter;
+            [SimVar(Name = "GENERAL ENG STARTER:2", UnitId = FsUnit.Bool)]
             public bool Engine2Starter;
+            [SimVar(Name = "GENERAL ENG STARTER:3", UnitId = FsUnit.Bool)]
             public bool Engine3Starter;
+            [SimVar(Name = "GENERAL ENG STARTER:4", UnitId = FsUnit.Bool)]
             public bool Engine4Starter;
+            [SimVar(Name = "GENERAL ENG COMBUSTION:1", UnitId = FsUnit.Bool)]
             public bool Engine1Combusting;
+            [SimVar(Name = "GENERAL ENG COMBUSTION:2", UnitId = FsUnit.Bool)]
             public bool Engine2Combusting;
+            [SimVar(Name = "GENERAL ENG COMBUSTION:3", UnitId = FsUnit.Bool)]
             public bool Engine3Combusting;
+            [SimVar(Name = "GENERAL ENG COMBUSTION:4", UnitId = FsUnit.Bool)]
             public bool Engine4Combusting;
+            [SimVar(NameId = FsSimVar.LightNav, UnitId = FsUnit.Bool)]
             public bool LightNav;
+            [SimVar(NameId = FsSimVar.LightBeacon, UnitId = FsUnit.Bool)]
             public bool LightBeacon;
+            [SimVar(NameId = FsSimVar.LightLanding, UnitId = FsUnit.Bool)]
             public bool LightLanding;
+            [SimVar(NameId = FsSimVar.LightTaxi, UnitId = FsUnit.Bool)]
             public bool LightTaxi;
+            [SimVar(NameId = FsSimVar.LightStrobe, UnitId = FsUnit.Bool)]
             public bool LightStrobe;
+            [SimVar(NameId = FsSimVar.LightPanel, UnitId = FsUnit.Bool)]
             public bool LightPanel;
+            [SimVar(NameId = FsSimVar.LightRecognition, UnitId = FsUnit.Bool)]
             public bool LightRecognition;
+            [SimVar(NameId = FsSimVar.LightWing, UnitId = FsUnit.Bool)]
             public bool LightWing;
+            [SimVar(NameId = FsSimVar.LightLogo, UnitId = FsUnit.Bool)]
             public bool LightLogo;
+            [SimVar(NameId = FsSimVar.LightCabin, UnitId = FsUnit.Bool)]
             public bool LightCabin;
         }
 
